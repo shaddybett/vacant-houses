@@ -15,4 +15,3 @@ def run_migrations():
 if __name__ == "__main__":
     init_database()
     run_migrations()
-    add_sample_data()
