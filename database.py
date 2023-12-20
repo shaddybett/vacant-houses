@@ -5,7 +5,8 @@ from alembic.config import Config
 from alembic import command
 
 def init_database():
-    Base.metadata.create_all()
+    # Create tables
+    Base.metadata.create_all(bind=engine)
 
 def run_migrations():
     alembic_cfg = Config("alembic.ini")
