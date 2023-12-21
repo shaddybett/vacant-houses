@@ -1,8 +1,21 @@
 # database.py
 
-from models import Base, engine, session, House
-from alembic.config import Config
-from alembic import command
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from models import Base, House
+
+# Define the engine
+db_url = 'sqlite:///houseDB.db'
+engine = create_engine(db_url)
+
+# Bind the engine to the Base class
+Base.metadata.bind = engine
+
+# Create a session factory
+Session = sessionmaker(bind=engine)
+
+# Create a session
+session = Session()
 
 def init_database():
     # Create tables
@@ -20,11 +33,10 @@ def add_sample_data():
         {"location": "Runda", "bedrooms": 5, "price": 300000},
     ]
 
-    for data in houses_data:
-        house = House(**data)
-        session.add(house)
-
-    session.commit()
+    with session.begin():
+        for data in houses_data:
+            house = House(**data)
+            session.add(house)
 
 if __name__ == "__main__":
     init_database()
