@@ -1,13 +1,14 @@
 # models.py
 
-from sqlalchemy import create_engine, String, Integer, Column
+from sqlalchemy import create_engine, Column, String, Integer
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 import uuid
-
-Base = declarative_base()
 
 def generate_uuid():
     return str(uuid.uuid4())
+
+Base = declarative_base()
 
 class House(Base):
     __tablename__ = 'houses'
@@ -17,7 +18,6 @@ class House(Base):
     price = Column('price', Integer)
 
     def __init__(self, location, bedrooms, price):
-        self.houseid = None
         self.location = location
         self.bedrooms = bedrooms
         self.price = price

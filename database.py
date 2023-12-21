@@ -1,25 +1,44 @@
-# operations.py
+# database.py
 
-from database import Session
-from models import House
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from models import Base, House
 
-# Use the Session object directly
+# Define the engine
+db_url = 'sqlite:///houseDB.db'
+engine = create_engine(db_url)
+
+# Bind the engine to the Base class
+Base.metadata.bind = engine
+
+# Create a session factory
+Session = sessionmaker(bind=engine)
+
+# Create a session
 session = Session()
 
-def add_house(location, bedrooms, price):
-    exists = session.query(House).filter_by(location=location).first()
-    if exists:
-        print('Location exists')
-    else:
-        new_house = House(location=location, bedrooms=bedrooms, price=price)
-        session.add(new_house)
-        session.commit()
+def init_database():
+    # Create tables
+    Base.metadata.create_all(bind=engine)
 
-def get_house_details(location):
-    house = session.query(House).filter_by(location=location).first()
-    if house:
-        print(f"Location: {house.location}")
-        print(f"Bedrooms: {house.bedrooms}")
-        print(f"Price: {house.price}")
-    else:
-        print(f"No house found for location: {location}")
+def run_migrations():
+    alembic_cfg = Config("alembic.ini")
+    command.upgrade(alembic_cfg, "head")
+
+def add_sample_data():
+    # Add sample houses
+    houses_data = [
+        {"location": "Ngong", "bedrooms": 3, "price": 200000},
+        {"location": "Karen", "bedrooms": 4, "price": 250000},
+        {"location": "Runda", "bedrooms": 5, "price": 300000},
+    ]
+
+    with session.begin():
+        for data in houses_data:
+            house = House(**data)
+            session.add(house)
+
+if __name__ == "__main__":
+    init_database()
+    run_migrations()
+    add_sample_data()
